@@ -57,5 +57,19 @@ router.delete("/:id",async(req,res)=>{
     return res.status(404).json({message:"Uset not found"});
   }
   res.status(200).json({ message: "User deleted successfully" });
+});
+//dashbaord data
+router.get("/dashboard",async(req,res)=>{
+  const month= parseInt(req.params.month);
+  const birthdayEmp=await User.find({
+    dob: { $regex: `-${month.toString().padStart(2, "0")}-` },
+  }).select("name dob");
+  const workAnniversaryEmployees = await User.find({
+    joining_date: { $regex: `-${month.toString().padStart(2, "0")}-` }, // Matches "YYYY-MM-DD"
+  }).select("name joining_date");
+  res.status(200).json({
+    birthdays: birthdayEmployees,
+    work_anniversaries: workAnniversaryEmployees,
+  });
 })
 module.exports = router;
